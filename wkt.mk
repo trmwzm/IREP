@@ -51,7 +51,8 @@ dirname = $(if $(patsubst %/,%,$(dir $(1))),$(patsubst %/,%,$(dir $(1))),/)
 # $lua_root/include and libs are in $lua_root/lib.  Lua varies quite a bit
 # from system to system, so you may need to inject LUA_INCLUDE and
 # LUA_LIBRARIES yourself.
-LUA := $(shell command -v lua 2> /dev/null)
+# LUA := $(shell command -v lua 2> /dev/null)
+LUA := $(shell luaenv which lua 2> /dev/null)
 LUA_ROOT := $(call dirname,$(call dirname,$(LUA)))
 LUA_INCLUDE := -I$(LUA_ROOT)/include
 $(info $(LUA_INCLUDE))
@@ -81,7 +82,7 @@ COMPILE.f = $(FC) $(FFLAGS) $(CPPFLAGS) -DIREP_LANG_FORTRAN
 
 # generate fortran from every wkt_%.h file
 wkt_%.f: wkt_%.h
-	$(irep_generate) --mode fortran $< > $@
+	env CPPFLAGS=-I$(irep_dir) $(irep_generate) --mode fortran $< > $@
 
 # helper function for finding wkt files with absolute paths
 containing = $(foreach v,$2,$(if $(findstring $1,$v),$v))
